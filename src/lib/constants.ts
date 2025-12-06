@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { NavItem } from "@/types";
 
+
 export const APP_NAME = "Arffy Technologies";
 export const APP_DESCRIPTION = "Cluster Monitor System";
 
