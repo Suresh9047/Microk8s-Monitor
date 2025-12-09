@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export function BrandingPanel() {
     return (
-        <div className="hidden lg:flex flex-1 flex-col justify-center items-start p-16 xl:p-24 relative z-10 border-r border-white/5 bg-white/[0.02]">
+        <div className="hidden lg:flex flex-1 flex-col justify-center items-start p-16 xl:p-24 relative z-10 border-r border-white/5 bg-white/[0.02] backdrop-blur-3xl">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

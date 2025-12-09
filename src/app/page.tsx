@@ -8,14 +8,13 @@ import { TriangleAlert } from "lucide-react";
 import { BrandingPanel } from "@/components/auth/BrandingPanel";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
-import { AdminLoginForm } from "@/components/auth/AdminLoginForm";
 
 import { authService } from "@/services/auth.service";
 
-type AuthMode = "user-login" | "admin-login" | "register";
+type AuthMode = "login" | "register";
 
 export default function LoginPage() {
-  const [mode, setMode] = useState<AuthMode>("user-login");
+  const [mode, setMode] = useState<AuthMode>("login");
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -34,9 +33,7 @@ export default function LoginPage() {
       const isAdmin = roles.includes("Admin");
       const roleName = isAdmin ? "admin" : "user";
 
-      // LocalStorage is handled here for role/user details, 
-      // Token is not auto-saved by clientWrapper unless we explicitly do it here or in service.
-      // It's safer to do it here where we parse the response structure.
+      // LocalStorage is handled here for role/user details
       localStorage.setItem("userRole", roleName);
       localStorage.setItem("userName", user.username);
       localStorage.setItem("userEmail", user.username + "@arffy.tech");
@@ -50,17 +47,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleUserLogin = (data: any) => {
+  const handleLogin = (data: any) => {
     setError("");
-    // Mapping email field to username as per UI design choice vs API need
-    const payload = { username: data.email, password: data.password };
-    performLogin(payload);
-  };
-
-  const handleAdminLogin = (data: any) => {
-    setError("");
-    const payload = { username: data.adminId, password: data.passkey };
-    performLogin(payload);
+    // LoginForm now returns { username, password }
+    performLogin(data);
   };
 
   const handleRegister = async (data: any) => {
@@ -74,7 +64,7 @@ export default function LoginPage() {
 
       // Assuming success if no error thrown by client wrapper
       alert("Registration Successful! Please sign in.");
-      setMode("user-login");
+      setMode("login");
 
     } catch (err: any) {
       console.error("Register Error:", err);
@@ -95,7 +85,7 @@ export default function LoginPage() {
       {/* Right Panel - Auth Forms */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 relative z-10 w-full max-w-lg mx-auto lg:max-w-none">
         {/* Mobile Branding (Visible only on small screens) */}
-        <div className="lg:hidden mb-8 text-center">
+        <div className="lg:hidden mb-8 text-center pt-8">
           <h2 className="text-2xl font-bold text-white mb-2">
             Arffy Technologies
           </h2>
@@ -109,33 +99,24 @@ export default function LoginPage() {
         >
           <div className="bg-slate-950/50 backdrop-blur-xl border border-slate-800/60 p-8 rounded-3xl shadow-2xl shadow-indigo-500/5">
             {/* Tabs */}
-            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900/50 rounded-xl mb-8">
+            <div className="grid grid-cols-2 gap-1 p-1 bg-slate-900/50 rounded-xl mb-8">
               <button
-                onClick={() => { setMode("user-login"); setError(""); }}
-                className={`text-sm font-medium py-2 rounded-lg transition-all ${mode === "user-login"
-                  ? "bg-slate-800 text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
-                  }`}
-              >
-                User
-              </button>
-              <button
-                onClick={() => { setMode("register"); setError(""); }}
-                className={`text-sm font-medium py-2 rounded-lg transition-all ${mode === "register"
+                onClick={() => { setMode("login"); setError(""); }}
+                className={`text-sm font-medium py-2 rounded-lg transition-all ${mode === "login"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
                   }`}
               >
-                Register
+                Sign In
               </button>
               <button
-                onClick={() => { setMode("admin-login"); setError(""); }}
-                className={`text-sm font-medium py-2 rounded-lg transition-all ${mode === "admin-login"
-                  ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                onClick={() => { setMode("register"); setError(""); }}
+                className={`text-sm font-medium py-2 rounded-lg transition-all ${mode === "register"
+                  ? "bg-slate-700 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
                   }`}
               >
-                Admin
+                Register
               </button>
             </div>
 
@@ -158,16 +139,12 @@ export default function LoginPage() {
 
             {/* Forms Area */}
             <AnimatePresence mode="wait">
-              {mode === "user-login" && (
-                <LoginForm onSubmit={handleUserLogin} />
+              {mode === "login" && (
+                <LoginForm onSubmit={handleLogin} />
               )}
 
               {mode === "register" && (
                 <RegisterForm onSubmit={handleRegister} />
-              )}
-
-              {mode === "admin-login" && (
-                <AdminLoginForm onSubmit={handleAdminLogin} />
               )}
             </AnimatePresence>
           </div>

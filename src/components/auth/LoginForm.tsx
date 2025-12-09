@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { User, Lock, ArrowRight } from "lucide-react";
+import { User, Lock, ArrowRight, Fingerprint } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -11,22 +11,21 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSubmit }: LoginFormProps) {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        onSubmit({ email, password });
-        // Keep loading state until parent resolves or error occurs
-        // Parent should handle setIsLoading(false) if passed or we just rely on unmount/redirect
+        // Unified payload structure
+        onSubmit({ username, password });
         setTimeout(() => setIsLoading(false), 3000); // Safety fallback
     };
 
     return (
         <motion.form
-            key="user-login"
+            key="login"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
@@ -34,28 +33,39 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
             onSubmit={handleSubmit}
         >
             <div className="text-center mb-6">
-                <h3 className="text-xl font-bold">Welcome Back</h3>
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-500/10 text-indigo-500 mb-3 border border-indigo-500/20">
+                    <Fingerprint size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white">System Access</h3>
                 <p className="text-slate-400 text-sm">
-                    Enter your credentials to access the dashboard
+                    Authenticate to continue
                 </p>
             </div>
+
             <Input
-                label="Username or Email"
-                placeholder="suresh@gmail.com"
+                label="Username"
+                placeholder="Enter username"
                 icon={<User size={18} />}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                className="border-slate-800 focus:border-indigo-500/50 focus:ring-indigo-500/10 bg-slate-900/50"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
             />
             <Input
                 type="password"
                 label="Password"
                 placeholder="••••••••"
                 icon={<Lock size={18} />}
+                className="border-slate-800 focus:border-indigo-500/50 focus:ring-indigo-500/10 bg-slate-900/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <Button className="w-full mt-2" size="lg" isLoading={isLoading}>
-                Sign In <ArrowRight className="w-4 h-4" />
+
+            <Button
+                className="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20"
+                size="lg"
+                isLoading={isLoading}
+            >
+                Sign In <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
         </motion.form>
     );
